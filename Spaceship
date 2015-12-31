@@ -1,0 +1,82 @@
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import javax.swing.*;
+import javax.imageio.*;
+import java.io.*;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+
+public class Spaceship
+{
+  private int health = 100;
+//  private Weapon weapon = null;
+  private int lives = 5;
+  private boolean isAlive = true;
+  private int x = 0;
+  private int y = 0;
+  private int xa = 0;
+  private int ya = 0;
+  private boolean hasMultiShot = false;
+  private boolean isImmune = false;
+  BufferedImage img = null;
+  public Spaceship(int x, int y) {
+    this.x = x;
+    this.y = y;
+    try {
+      img = ImageIO.read(new File("Spaceship.png"));
+    } catch (IOException e) {
+    }
+  }
+  
+  public void move()
+  {
+    if (x + xa < 0)
+      xa = 0;
+    if (x + xa > 800)
+      xa = 0;
+    if (y + ya < 0)
+      ya = 0;
+    if (y + ya > 800)
+      ya = 0;
+    x = x + xa;
+    y = y + ya;
+  }
+  
+  public void keyReleased(KeyEvent e) {
+    xa = 0;
+    ya = 0;
+  }
+  
+  public void keyPressed(KeyEvent e) { 
+    if (e.getKeyCode() == KeyEvent.VK_LEFT) 
+      xa = -1;
+    if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+      xa = 1;
+    if (e.getKeyCode() == KeyEvent.VK_UP)
+      ya = -1; 
+    if (e.getKeyCode() == KeyEvent.VK_DOWN) 
+      ya = 1; 
+  }
+  
+  public void paint(Graphics g)
+  {
+    g.drawImage(img,x,y,null);
+  }
+  
+//  public void fire(Shot shot)
+//  {
+//  }
+  
+//  public void weaponFire(Weapon weapon)
+//  {
+//  }
+  
+  public void die()
+  {
+  }
+  
+  public void respawn()
+  {
+  }
+}
