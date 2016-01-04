@@ -1,0 +1,58 @@
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import javax.swing.*;
+import javax.imageio.*;
+import java.io.*;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+
+public class DiverList
+{
+  private Node head;
+  class Node
+  {
+    Diver d;
+    Node link;
+    Node (Diver i, Node n)
+    {
+      d = i;
+      link = n;
+    }
+  }
+  
+  public void addAtFront (Diver b)
+  {
+    head = new Node(b, head);
+  }
+  
+  public void paint(Graphics g)
+  {
+    for(Node temp = head; temp!= null; temp = temp.link)
+    {
+      temp.d.paint(g);
+    }
+  }
+  
+  public void move()
+  {
+    for(Node temp = head; temp!= null; temp = temp.link)
+    {
+      temp.d.move();
+      if(head.d.getY() > 800 || head.d.getHealth() <= 0)
+        head = head.link;
+      else if(temp.link != null){
+        if(temp.link.d.getY() > 800 || head.link.d.getHealth() <= 0)
+          removeDiver(temp);
+      }
+    }
+  }
+  
+  public void removeDiver(Node n)
+  {
+    if(n.link == null)
+      n = null;
+    else
+      n.link = n.link.link;
+  }
+}
