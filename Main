@@ -9,6 +9,8 @@ public class Main extends JPanel
   private boolean inControls = false;
   private Spaceship ship = new Spaceship(300,600);
   
+  private static DiverList diverList = new DiverList();
+  
   public Main()
   {
     addKeyListener(new KeyListener() {
@@ -34,11 +36,13 @@ public class Main extends JPanel
     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                          RenderingHints.VALUE_ANTIALIAS_ON);
     ship.paint(g2d);
+    diverList.paint(g2d);
   }
   
   public void move()
   {
     ship.move();
+    diverList.move();
   }
   
   public static void main (String[] args) throws InterruptedException
@@ -48,6 +52,15 @@ public class Main extends JPanel
     frame.add(main); 
     frame.setSize(800,800); 
     frame.setVisible(true);
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    
+    for(int i = 20; i > 0; i--)
+    {
+      double q = 736 * Math.random();
+      Diver diver = new Diver((int)q, -120*i);
+      diverList.addAtFront(diver);
+    }
+    
     while (true)
     {
       main.move();
