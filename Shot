@@ -1,0 +1,42 @@
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import javax.swing.*;
+import javax.imageio.*;
+import java.io.*;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+
+public class Shot
+{
+  BufferedImage img = null;
+  private int x;
+  private int y;
+  private int ya = 4;
+  private int dmg = 1;
+  
+  public Shot(int x, int y)
+  {
+    this.x = x;
+    this.y = y;
+    try {
+      img = ImageIO.read(new File("bullet.png"));
+    } catch (IOException e) {
+    }
+  }
+  
+  public void move()
+  {
+    y = y - ya;
+  }
+   
+  public void paint(Graphics g)
+  {
+    g.drawImage(img,x,y,null);
+  }
+   
+  public int getY()
+  {
+    return y;
+  }
+}
