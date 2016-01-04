@@ -17,9 +17,13 @@ public class Spaceship
   private int y = 0;
   private int xa = 0;
   private int ya = 0;
-  private boolean hasMultiShot = false;
-  private boolean isImmune = false;
+  private boolean isShooting = false;
+//  private boolean hasMultiShot = false;
+//  private boolean isImmune = false;
   BufferedImage img = null;
+  BufferedImage image = null;
+  ShotList shotlist = new ShotList();
+  
   public Spaceship(int x, int y) {
     this.x = x;
     this.y = y;
@@ -31,42 +35,59 @@ public class Spaceship
   
   public void move()
   {
+    //FIX END DISTANCES
     if (x + xa < 0)
       xa = 0;
-    if (x + xa > 800)
+    if (x + xa > 700)
       xa = 0;
     if (y + ya < 0)
       ya = 0;
-    if (y + ya > 800)
+    if (y + ya > 712)
       ya = 0;
     x = x + xa;
     y = y + ya;
+    shotlist.move();
   }
   
   public void keyReleased(KeyEvent e) {
-    xa = 0;
-    ya = 0;
+    if (e.getKeyCode() == KeyEvent.VK_LEFT) 
+      xa = 0;
+    if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+      xa = 0;
+    if (e.getKeyCode() == KeyEvent.VK_UP)
+      ya = 0; 
+    if (e.getKeyCode() == KeyEvent.VK_DOWN) 
+      ya = 0; 
+    if (e.getKeyCode() == KeyEvent.VK_SPACE)
+      isShooting = false;
   }
   
   public void keyPressed(KeyEvent e) { 
     if (e.getKeyCode() == KeyEvent.VK_LEFT) 
-      xa = -1;
+      xa = -2;
     if (e.getKeyCode() == KeyEvent.VK_RIGHT)
-      xa = 1;
+      xa = 2;
     if (e.getKeyCode() == KeyEvent.VK_UP)
-      ya = -1; 
+      ya = -2; 
     if (e.getKeyCode() == KeyEvent.VK_DOWN) 
-      ya = 1; 
+      ya = 2; 
+    if (e.getKeyCode() == KeyEvent.VK_SPACE && !isShooting) {
+      fire();
+      isShooting = true;
+    }
   }
   
   public void paint(Graphics g)
   {
+    shotlist.paint(g);
     g.drawImage(img,x,y,null);
   }
   
-//  public void fire(Shot shot)
-//  {
-//  }
+  public void fire()
+  {
+    Shot shot = new Shot(x + 45,y);
+    shotlist.addAtFront(shot);
+  }
   
 //  public void weaponFire(Weapon weapon)
 //  {
