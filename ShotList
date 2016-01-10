@@ -6,9 +6,11 @@ import javax.imageio.*;
 import java.io.*;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.util.*;
 
 public class ShotList
 {
+  ArrayList list;
   private Node head;
   class Node
   {
@@ -19,6 +21,11 @@ public class ShotList
       s = i;
       link = n;
     }
+  }
+  
+  public ShotList(ArrayList list)
+  {
+    this.list = list;
   }
   
   public void addAtFront (Shot b)
@@ -39,11 +46,17 @@ public class ShotList
     for(Node temp = head; temp!= null; temp = temp.link)
     {
       temp.s.move();
-      if(head.s.getY() < -20)
+      if(head.s.getY() < -20 || head.s.getHealth() <= 0)
+      {
         head = head.link;
+        list.remove(head.s);
+      }
       else if(temp.link != null){
-        if(temp.link.s.getY() < -20)
+        if(temp.link.s.getY() < -20 || head.s.getHealth() <= 0)
+        {
           removeShot(temp);
+          list.remove(temp.s);
+        }
       }
     }
   }
@@ -54,5 +67,10 @@ public class ShotList
       n = null;
     else
       n.link = n.link.link;
+  }
+  
+  public void update(ArrayList list)
+  {
+    this.list = list;
   }
 }
