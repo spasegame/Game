@@ -6,9 +6,11 @@ import javax.imageio.*;
 import java.io.*;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.util.*;
 
 public class DiverList
 {
+  ArrayList list;
   private Node head;
   class Node
   {
@@ -19,6 +21,11 @@ public class DiverList
       d = i;
       link = n;
     }
+  }
+  
+  public DiverList(ArrayList list)
+  {
+    this.list = list;
   }
   
   public void addAtFront (Diver b)
@@ -40,10 +47,16 @@ public class DiverList
     {
       temp.d.move();
       if(head.d.getY() > 800 || head.d.getHealth() <= 0)
+      {
         head = head.link;
+        list.remove(head.d);
+      }
       else if(temp.link != null){
         if(temp.link.d.getY() > 800 || head.link.d.getHealth() <= 0)
+        {
           removeDiver(temp);
+          list.remove(temp.d);
+        }
       }
     }
   }
