@@ -1,0 +1,17 @@
+public abstract class BadObj
+{
+  private int x;
+  private int y;
+  private int w;
+  private int h;
+  private int dmg;
+  private int health;
+  
+  public abstract int getX();
+  public abstract int getY();
+  public abstract int getW();
+  public abstract int getH();
+  public abstract int getDMG();
+  public abstract int getHealth();
+  public abstract void setHealth(int health);
+}
