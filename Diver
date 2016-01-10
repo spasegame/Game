@@ -6,18 +6,24 @@ import javax.imageio.*;
 import java.io.*;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.util.*;
 
-public class Diver
+public class Diver extends BadObj
 {
   private int x;
   private int y;
   private int health = 1;
+  private int dmg = 1;
+  private int w = 62;
+  private int h = 56;
   BufferedImage img = null;
+  ArrayList list;
   
-  public Diver(int x, int y)
+  public Diver(int x, int y, ArrayList list)
   {
     this.x = x;
     this.y = y;
+    this.list = list;
     try {
       img = ImageIO.read(new File("diver.png"));
     } catch (IOException e) {
@@ -34,13 +40,38 @@ public class Diver
     g.drawImage(img,x,y,null);
   }
   
+  public int getX()
+  {
+    return x;
+  }
+  
   public int getY()
   {
     return y;
   }
   
+  public int getW()
+  {
+    return w;
+  }
+  
+  public int getH()
+  {
+    return h;
+  }
+  
+  public int getDMG()
+  {
+    return dmg;
+  }
+  
   public int getHealth()
   {
     return health;
+  }
+  
+  public void setHealth(int health)
+  {
+    this.health -= health;
   }
 }
