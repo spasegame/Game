@@ -2,14 +2,17 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.*;
+import java.util.*;
 
 public class Main extends JPanel
 {
   private boolean inMainMenu = false;
   private boolean inControls = false;
-  private Spaceship ship = new Spaceship(300,600);
+  ArrayList<GoodObj> goodList = new ArrayList<GoodObj>();
+  ArrayList<BadObj> badList = new ArrayList<BadObj>();
+  private Spaceship ship = new Spaceship(300,600,goodList);
   
-  private static DiverList diverList = new DiverList();
+  private DiverList diverList = new DiverList(badList);
   
   public Main()
   {
@@ -27,6 +30,15 @@ public class Main extends JPanel
       }
     }); 
     setFocusable(true);
+    goodList.add(ship);
+    
+    for(int i = 20; i > 0; i--)
+    {
+      double q = 736 * Math.random();
+      Diver diver = new Diver((int)q, -120*i, badList);
+      diverList.addAtFront(diver);
+      badList.add(diver);
+    }
   }
   
   public void paint(Graphics g)
@@ -35,6 +47,8 @@ public class Main extends JPanel
     Graphics2D g2d = (Graphics2D) g;
     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                          RenderingHints.VALUE_ANTIALIAS_ON);
+    g.setColor(Color.BLACK);
+    g.fillRect(0,0,800,800);
     ship.paint(g2d);
     diverList.paint(g2d);
   }
@@ -43,6 +57,36 @@ public class Main extends JPanel
   {
     ship.move();
     diverList.move();
+  }
+  
+  public void collide()
+  {
+    for(int i = 0; i < goodList.size(); i++)
+    {
+      for(int j = 0; j < badList.size(); j++)
+      {
+        int newX = Math.max(goodList.get(i).getX(),badList.get(j).getX());
+        int newY = Math.max(goodList.get(i).getY(),badList.get(j).getY());
+        int newW = Math.min(goodList.get(i).getX()+goodList.get(i).getW(),badList.get(j).getX()+badList.get(j).getW()) - Math.max(goodList.get(i).getX(),badList.get(j).getX());
+        int newH = Math.min(goodList.get(i).getY()+goodList.get(i).getH(),badList.get(j).getY()+badList.get(j).getH()) - Math.max(goodList.get(i).getY(),badList.get(j).getY());
+        if(newW < 0 || newH < 0)
+        {
+          newX = 0;
+          newY = 0;
+          newW = 0;
+          newH = 0;
+        }
+        if(newW > 0 || newH > 0)
+        {
+          goodList.get(i).setHealth(badList.get(j).getDMG());
+          badList.get(j).setHealth(goodList.get(i).getDMG());
+          if(goodList.get(i).getHealth() <= 0)
+            goodList.remove(i);
+          if(badList.get(j).getHealth() <= 0)
+            badList.remove(j);
+        }
+      }
+    }
   }
   
   public static void main (String[] args) throws InterruptedException
@@ -54,16 +98,17 @@ public class Main extends JPanel
     frame.setVisible(true);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     
-    for(int i = 20; i > 0; i--)
-    {
-      double q = 736 * Math.random();
-      Diver diver = new Diver((int)q, -120*i);
-      diverList.addAtFront(diver);
-    }
+//    for(int i = 20; i > 0; i--)
+//    {
+//      double q = 736 * Math.random();
+//      Diver diver = new Diver((int)q, -120*i, badList);
+//      diverList.addAtFront(diver);
+//    }
     
     while (true)
     {
       main.move();
+      main.collide();
       main.repaint();
       Thread.sleep(5);
     }
