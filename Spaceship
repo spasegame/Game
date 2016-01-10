@@ -6,10 +6,11 @@ import javax.imageio.*;
 import java.io.*;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.util.*;
 
-public class Spaceship
+public class Spaceship extends GoodObj
 {
-  private int health = 100;
+  private int health = 1;
 //  private Weapon weapon = null;
   private int lives = 5;
   private boolean isAlive = true;
@@ -17,16 +18,21 @@ public class Spaceship
   private int y = 0;
   private int xa = 0;
   private int ya = 0;
+  private int w = 100;
+  private int h = 88;
+  private int dmg = 1;
   private boolean isShooting = false;
 //  private boolean hasMultiShot = false;
 //  private boolean isImmune = false;
   BufferedImage img = null;
   BufferedImage image = null;
-  ShotList shotlist = new ShotList();
+  ArrayList list;
+  ShotList shotlist = new ShotList(list);
   
-  public Spaceship(int x, int y) {
+  public Spaceship(int x, int y, ArrayList list) {
     this.x = x;
     this.y = y;
+    this.list = list;
     try {
       img = ImageIO.read(new File("Spaceship.png"));
     } catch (IOException e) {
@@ -35,18 +41,20 @@ public class Spaceship
   
   public void move()
   {
-    //FIX END DISTANCES
-    if (x + xa < 0)
-      xa = 0;
-    if (x + xa > 700)
-      xa = 0;
-    if (y + ya < 0)
-      ya = 0;
-    if (y + ya > 712)
-      ya = 0;
-    x = x + xa;
-    y = y + ya;
-    shotlist.move();
+    if(isAlive) {
+      //FIX END DISTANCES
+      if (x + xa < 0)
+        xa = 0;
+      if (x + xa > 700)
+        xa = 0;
+      if (y + ya < 0)
+        ya = 0;
+      if (y + ya > 712)
+        ya = 0;
+      x = x + xa;
+      y = y + ya;
+      shotlist.move();
+    }
   }
   
   public void keyReleased(KeyEvent e) {
@@ -63,30 +71,38 @@ public class Spaceship
   }
   
   public void keyPressed(KeyEvent e) { 
-    if (e.getKeyCode() == KeyEvent.VK_LEFT) 
-      xa = -2;
-    if (e.getKeyCode() == KeyEvent.VK_RIGHT)
-      xa = 2;
-    if (e.getKeyCode() == KeyEvent.VK_UP)
-      ya = -2; 
-    if (e.getKeyCode() == KeyEvent.VK_DOWN) 
-      ya = 2; 
-    if (e.getKeyCode() == KeyEvent.VK_SPACE && !isShooting) {
-      fire();
-      isShooting = true;
+    if(isAlive) {
+      if (e.getKeyCode() == KeyEvent.VK_LEFT) 
+        xa = -2;
+      if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+        xa = 2;
+      if (e.getKeyCode() == KeyEvent.VK_UP)
+        ya = -2; 
+      if (e.getKeyCode() == KeyEvent.VK_DOWN) 
+        ya = 2; 
+      if (e.getKeyCode() == KeyEvent.VK_SPACE && !isShooting) {
+        fire();
+        isShooting = true;
+      }
     }
   }
   
   public void paint(Graphics g)
   {
-    shotlist.paint(g);
-    g.drawImage(img,x,y,null);
+    if(isAlive) {
+      shotlist.paint(g);
+      shotlist.update(list);
+      g.drawImage(img,x,y,null);
+    }
   }
   
   public void fire()
   {
-    Shot shot = new Shot(x + 45,y);
-    shotlist.addAtFront(shot);
+    if(isAlive) {
+      Shot shot = new Shot(x + 45,y,list);
+      shotlist.addAtFront(shot);
+      list.add(shot);
+    }
   }
   
 //  public void weaponFire(Weapon weapon)
@@ -95,9 +111,47 @@ public class Spaceship
   
   public void die()
   {
+    isAlive = false;
   }
   
   public void respawn()
   {
+  }
+  
+  public int getX()
+  {
+    return x;
+  }
+  
+  public int getY()
+  {
+    return y;
+  }
+  
+  public int getW()
+  {
+    return w;
+  }
+  
+  public int getH()
+  {
+    return h;
+  }
+  
+  public int getDMG()
+  {
+    return dmg;
+  }
+  
+  public int getHealth()
+  {
+    return health;
+  }
+  
+  public void setHealth(int health)
+  {
+    this.health -= health;
+    if(health <= 0)
+      die();
   }
 }
