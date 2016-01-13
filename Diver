@@ -74,4 +74,9 @@ public class Diver extends BadObj
   {
     this.health -= health;
   }
+  
+  public void setX(int x)
+  {
+    this.x = x;
+  }
 }
