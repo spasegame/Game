@@ -71,8 +71,8 @@ public class Shot extends GoodObj
     return health;
   }
   
-  public void setHealth(int health)
+  public void setHealth(int d)
   {
-    this.health -= health;
+    health = health - d;
   }
 }
