@@ -8,6 +8,7 @@ public class Main extends JPanel
 {
   private boolean inMainMenu = false;
   private boolean inControls = false;
+  private boolean inList = false;
   ArrayList<GoodObj> goodList = new ArrayList<GoodObj>();
   ArrayList<BadObj> badList = new ArrayList<BadObj>();
   ArrayList<Diver> diverList = new ArrayList<Diver>();
@@ -49,8 +50,15 @@ public class Main extends JPanel
     g.setColor(Color.BLACK);
     g.fillRect(0,0,800,800);
     ship.paint(g2d);
-    if(ship.getHealth() <= 0){
+    if(ship.getHealth() <= 0 || ship.getImmune() == true){
       goodList.remove(ship);
+      inList = false;
+    }
+    if(ship.getAlive() == false)
+      ship.respawn(true);
+    if(ship.getImmune() == false && !inList) {
+      goodList.add(ship);
+      inList = true;
     }
     for(int i = 0; i < diverList.size(); i++)
     {
@@ -104,7 +112,7 @@ public class Main extends JPanel
       }
       if(goodList.get(i).getHealth() <= 0) {
         if(goodList.get(i) == ship) {
-          ship.setAlive(false);
+          ship.kill(false);
         }
         goodList.remove(goodList.get(i));
       }
@@ -116,7 +124,7 @@ public class Main extends JPanel
     JFrame frame = new JFrame("Space Stuff");
     Main main = new Main();
     frame.add(main); 
-    frame.setSize(800,800); 
+    frame.setSize(816,838); 
     frame.setVisible(true);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     
