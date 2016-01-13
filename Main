@@ -10,9 +10,8 @@ public class Main extends JPanel
   private boolean inControls = false;
   ArrayList<GoodObj> goodList = new ArrayList<GoodObj>();
   ArrayList<BadObj> badList = new ArrayList<BadObj>();
+  ArrayList<Diver> diverList = new ArrayList<Diver>();
   private Spaceship ship = new Spaceship(300,600,goodList);
-  
-  private DiverList diverList = new DiverList(badList);
   
   public Main()
   {
@@ -32,11 +31,11 @@ public class Main extends JPanel
     setFocusable(true);
     goodList.add(ship);
     
-    for(int i = 20; i > 0; i--)
+    for(int i = 100; i > 0; i--)
     {
       double q = 736 * Math.random();
       Diver diver = new Diver((int)q, -120*i, badList);
-      diverList.addAtFront(diver);
+      diverList.add(diver);
       badList.add(diver);
     }
   }
@@ -50,25 +49,44 @@ public class Main extends JPanel
     g.setColor(Color.BLACK);
     g.fillRect(0,0,800,800);
     ship.paint(g2d);
-    diverList.paint(g2d);
+    if(ship.getHealth() <= 0){
+      goodList.remove(ship);
+    }
+    for(int i = 0; i < diverList.size(); i++)
+    {
+      if(diverList.get(i).getY() > 800 || diverList.get(i).getHealth() <= 0)
+      {
+        diverList.remove(i);
+      }
+      else{
+        diverList.get(i).paint(g2d);
+      }
+    }
   }
   
   public void move()
   {
     ship.move();
-    diverList.move();
+     for(int i = 0; i < diverList.size(); i++)
+    {
+      diverList.get(i).move();
+    }
   }
   
   public void collide()
   {
+    int newX;
+    int newY;
+    int newW;
+    int newH;
     for(int i = 0; i < goodList.size(); i++)
     {
       for(int j = 0; j < badList.size(); j++)
       {
-        int newX = Math.max(goodList.get(i).getX(),badList.get(j).getX());
-        int newY = Math.max(goodList.get(i).getY(),badList.get(j).getY());
-        int newW = Math.min(goodList.get(i).getX()+goodList.get(i).getW(),badList.get(j).getX()+badList.get(j).getW()) - Math.max(goodList.get(i).getX(),badList.get(j).getX());
-        int newH = Math.min(goodList.get(i).getY()+goodList.get(i).getH(),badList.get(j).getY()+badList.get(j).getH()) - Math.max(goodList.get(i).getY(),badList.get(j).getY());
+        newX = Math.max(goodList.get(i).getX(),badList.get(j).getX());
+        newY = Math.max(goodList.get(i).getY(),badList.get(j).getY());
+        newW = Math.min(goodList.get(i).getX()+goodList.get(i).getW(),badList.get(j).getX()+badList.get(j).getW()) - Math.max(goodList.get(i).getX(),badList.get(j).getX());
+        newH = Math.min(goodList.get(i).getY()+goodList.get(i).getH(),badList.get(j).getY()+badList.get(j).getH()) - Math.max(goodList.get(i).getY(),badList.get(j).getY());
         if(newW < 0 || newH < 0)
         {
           newX = 0;
@@ -80,11 +98,15 @@ public class Main extends JPanel
         {
           goodList.get(i).setHealth(badList.get(j).getDMG());
           badList.get(j).setHealth(goodList.get(i).getDMG());
-          if(goodList.get(i).getHealth() <= 0)
-            goodList.remove(i);
-          if(badList.get(j).getHealth() <= 0)
-            badList.remove(j);
         }
+          if(badList.get(j).getHealth() <= 0)
+            badList.remove(badList.get(j));
+      }
+      if(goodList.get(i).getHealth() <= 0) {
+        if(goodList.get(i) == ship) {
+          ship.setAlive(false);
+        }
+        goodList.remove(goodList.get(i));
       }
     }
   }
@@ -97,13 +119,6 @@ public class Main extends JPanel
     frame.setSize(800,800); 
     frame.setVisible(true);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    
-//    for(int i = 20; i > 0; i--)
-//    {
-//      double q = 736 * Math.random();
-//      Diver diver = new Diver((int)q, -120*i, badList);
-//      diverList.addAtFront(diver);
-//    }
     
     while (true)
     {
