@@ -27,7 +27,7 @@ public class Spaceship extends GoodObj
   BufferedImage img = null;
   BufferedImage image = null;
   ArrayList list;
-  ShotList shotlist = new ShotList(list);
+  ArrayList<Shot> shotList = new ArrayList<Shot>();
   
   public Spaceship(int x, int y, ArrayList list) {
     this.x = x;
@@ -41,7 +41,7 @@ public class Spaceship extends GoodObj
   
   public void move()
   {
-    if(isAlive) {
+    if(isAlive == true) {
       //FIX END DISTANCES
       if (x + xa < 0)
         xa = 0;
@@ -53,7 +53,10 @@ public class Spaceship extends GoodObj
         ya = 0;
       x = x + xa;
       y = y + ya;
-      shotlist.move();
+    }
+    for(int i = 0; i < shotList.size(); i++)
+    {
+      shotList.get(i).move();
     }
   }
   
@@ -71,7 +74,7 @@ public class Spaceship extends GoodObj
   }
   
   public void keyPressed(KeyEvent e) { 
-    if(isAlive) {
+    if(isAlive == true) {
       if (e.getKeyCode() == KeyEvent.VK_LEFT) 
         xa = -2;
       if (e.getKeyCode() == KeyEvent.VK_RIGHT)
@@ -89,19 +92,28 @@ public class Spaceship extends GoodObj
   
   public void paint(Graphics g)
   {
-    if(isAlive) {
-      shotlist.paint(g);
-      shotlist.update(list);
+    if(isAlive == true) {
       g.drawImage(img,x,y,null);
+    }
+    for(int i = 0; i < shotList.size(); i++)
+    {
+      if(shotList.get(i).getY() < -20 || shotList.get(i).getHealth() <= 0)
+      {
+        shotList.get(i).setHealth(1);
+        shotList.remove(shotList.get(i));
+      }
+      else{
+        shotList.get(i).paint(g);
+      }
     }
   }
   
   public void fire()
   {
-    if(isAlive) {
+    if(isAlive == true) {
       Shot shot = new Shot(x + 45,y,list);
-      shotlist.addAtFront(shot);
       list.add(shot);
+      shotList.add(shot);
     }
   }
   
@@ -151,7 +163,10 @@ public class Spaceship extends GoodObj
   public void setHealth(int health)
   {
     this.health -= health;
-    if(health <= 0)
-      die();
+  }
+  
+  public void setAlive(boolean a)
+  {
+    isAlive = a;
   }
 }
