@@ -65,6 +65,7 @@ public class Main extends JPanel
       if(diverList.get(i).getY() > 800 || diverList.get(i).getHealth() <= 0)
       {
         diverList.remove(i);
+        //powerup spawn point
       }
       else{
         diverList.get(i).paint(g2d);
