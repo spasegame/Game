@@ -12,11 +12,15 @@ public class Diver extends BadObj
 {
   private int x;
   private int y;
+  private int ya = 2;
   private int health = 1;
-  private int dmg = 1;
+  private int dmg = 10;
   private int w = 62;
   private int h = 56;
+  private int deathBuffer = 81;
   BufferedImage img = null;
+  BufferedImage explode = null;
+  BufferedImage[] explosion = new BufferedImage[81];
   ArrayList list;
   
   public Diver(int x, int y, ArrayList list)
@@ -28,16 +32,34 @@ public class Diver extends BadObj
       img = ImageIO.read(new File("diver.png"));
     } catch (IOException e) {
     }
+    try {
+      explode = ImageIO.read(new File("explosion.png"));
+    } catch (IOException e) {
+    }
+    
+    for(int i = 0; i < 9; i++)
+    {
+      for(int j = 0; j < 9; j++)
+      {
+        explosion[(i*9) + j] = explode.getSubimage(j*100, i*100, 100, 100);
+      }
+    }
   }
   
   public void move()
   {
-    y += 1;
+    y += ya;
   }
   
   public void paint(Graphics g)
   {
-    g.drawImage(img,x,y,null);
+    if(health > 0)
+      g.drawImage(img,x,y,null);
+    else {
+      g.drawImage(explosion[81 - deathBuffer],x,y,null);
+      deathBuffer--;
+      ya = 0;
+    }
   }
   
   public int getX()
@@ -68,6 +90,11 @@ public class Diver extends BadObj
   public int getHealth()
   {
     return health;
+  }
+  
+  public int getBuffer()
+  {
+    return deathBuffer;
   }
   
   public void setHealth(int health)
