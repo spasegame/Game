@@ -1,0 +1,47 @@
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import javax.swing.*;
+import javax.imageio.*;
+import java.io.*;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.util.*;
+
+public class HUD
+{
+  private boolean isVisible;
+  private int health;
+  private int lives;
+  Spaceship ship;
+  
+  public HUD(Spaceship ship)
+  {
+    this.ship = ship;
+    health = ship.getHealth();
+    lives = ship.getLives();
+  }
+  
+  public void update(Spaceship ship)
+  {
+    this.ship = ship;
+    health = ship.getHealth();
+    lives = ship.getLives();
+  }
+  
+  public void paint(Graphics g)
+  {
+    Font font = new Font("Niagara Solid", Font.BOLD, 50);
+    g.setFont(font);
+    g.drawString("Lives: " + lives, 10, 600);
+    if(health > 0)
+      g.drawString("Health: " + health, 10, 700);
+    else
+      g.drawString("Health: 0", 10, 700);
+    if(lives == 0) {
+      font = new Font("Niagara Solid", Font.BOLD, 100);
+      g.setFont(font);
+      g.drawString("Game Over", 240,400);
+    }
+  }
+}
