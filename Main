@@ -2,6 +2,10 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.*;
+import javax.imageio.*;
+import java.io.*;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.*;
 
 public class Main extends JPanel
@@ -12,7 +16,10 @@ public class Main extends JPanel
   ArrayList<GoodObj> goodList = new ArrayList<GoodObj>();
   ArrayList<BadObj> badList = new ArrayList<BadObj>();
   ArrayList<Diver> diverList = new ArrayList<Diver>();
+  ArrayList<Sentry> sentryList = new ArrayList<Sentry>();
   private Spaceship ship = new Spaceship(300,600,goodList);
+  private HUD hud = new HUD(ship);
+  BufferedImage background = null;
   
   public Main()
   {
@@ -35,9 +42,21 @@ public class Main extends JPanel
     for(int i = 100; i > 0; i--)
     {
       double q = 736 * Math.random();
-      Diver diver = new Diver((int)q, -120*i, badList);
+      Diver diver = new Diver((int)q, -240*i, badList);
       diverList.add(diver);
       badList.add(diver);
+    }
+    for(int i = 50; i > 0; i--)
+    {
+      double q = 736 * Math.random();
+      Sentry sentry = new Sentry((int)q, -240*i, badList);
+      sentryList.add(sentry);
+      badList.add(sentry);
+    }
+    
+    try {
+      background = ImageIO.read(new File("background.jpg"));
+    } catch (IOException e) {
     }
   }
   
@@ -47,8 +66,8 @@ public class Main extends JPanel
     Graphics2D g2d = (Graphics2D) g;
     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                          RenderingHints.VALUE_ANTIALIAS_ON);
-    g.setColor(Color.BLACK);
-    g.fillRect(0,0,800,800);
+    g.drawImage(background,0,0,null);
+    g.setColor(Color.WHITE);
     ship.paint(g2d);
     if(ship.getHealth() <= 0 || ship.getImmune() == true){
       goodList.remove(ship);
@@ -62,7 +81,7 @@ public class Main extends JPanel
     }
     for(int i = 0; i < diverList.size(); i++)
     {
-      if(diverList.get(i).getY() > 800 || diverList.get(i).getHealth() <= 0)
+      if((diverList.get(i).getY() > 800 || diverList.get(i).getHealth() <= 0) && diverList.get(i).getBuffer() <= 0)
       {
         diverList.remove(i);
         //powerup spawn point
@@ -71,14 +90,30 @@ public class Main extends JPanel
         diverList.get(i).paint(g2d);
       }
     }
+    for(int i = 0; i < sentryList.size(); i++)
+    {
+      if((sentryList.get(i).getY() > 800 || sentryList.get(i).getHealth() <= 0) && sentryList.get(i).getBuffer() <= 0)
+      {
+        sentryList.remove(i);
+      }
+      else{
+        sentryList.get(i).paint(g2d);
+      }
+    }
+    hud.update(ship);
+    hud.paint(g2d);
   }
   
   public void move()
   {
     ship.move();
-     for(int i = 0; i < diverList.size(); i++)
+    for(int i = 0; i < diverList.size(); i++)
     {
       diverList.get(i).move();
+    }
+    for(int i = 0; i < sentryList.size(); i++)
+    {
+      sentryList.get(i).move();
     }
   }
   
