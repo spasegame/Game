@@ -26,10 +26,12 @@ public class Spaceship extends GoodObj
 //  private boolean hasMultiShot = false;
   private boolean isImmune = false;
   private int immuneTimer = 500;
-  private int flashTimer = 50;
+  private int flashTimer = 40;
   private boolean flash = true;
+  private int deathBuffer = 81;
   BufferedImage img = null;
-  BufferedImage image = null;
+  BufferedImage explode = null;
+  BufferedImage[] explosion = new BufferedImage[81];
   ArrayList list;
   ArrayList<Shot> shotList = new ArrayList<Shot>();
   
@@ -40,6 +42,17 @@ public class Spaceship extends GoodObj
     try {
       img = ImageIO.read(new File("Spaceship.png"));
     } catch (IOException e) {
+    }
+    try {
+      explode = ImageIO.read(new File("explosion.png"));
+    } catch (IOException e) {
+    }
+    for(int i = 0; i < 9; i++)
+    {
+      for(int j = 0; j < 9; j++)
+      {
+        explosion[(i*9) + j] = explode.getSubimage(j*100, i*100, 100, 100);
+      }
     }
   }
   
@@ -95,26 +108,6 @@ public class Spaceship extends GoodObj
   
   public void paint(Graphics g)
   {
-    if(isAlive == true) {
-      if(flash) {
-        g.drawImage(img,x,y,null);
-      }
-      if(isImmune) {
-        if(immuneTimer == 0) {
-          isImmune = false;
-          flash = true;
-        }
-        else
-          immuneTimer--;
-        if(flashTimer == 0) {
-          flash = !flash;
-          flashTimer = 50;
-        }
-        else {
-          flashTimer--;
-        }
-      }
-    }
     for(int i = 0; i < shotList.size(); i++)
     {
       if(shotList.get(i).getY() < -20 || shotList.get(i).getHealth() <= 0)
@@ -124,6 +117,31 @@ public class Spaceship extends GoodObj
       }
       else{
         shotList.get(i).paint(g);
+      }
+    }
+    if(isAlive == true) {
+      if(flash) 
+          g.drawImage(img,x,y,null);
+        if(isImmune) {
+          if(immuneTimer == 0) {
+            isImmune = false;
+            flash = true;
+          }
+          else
+            immuneTimer--;
+        if(flashTimer == 0) {
+          flash = !flash;
+          flashTimer = 40;
+        }
+        else {
+          flashTimer--;
+        }
+      }
+    }
+    else {
+      if(deathBuffer > 0) {
+        g.drawImage(explosion[81 - deathBuffer],x,y,null);
+        deathBuffer--;
       }
     }
   }
@@ -141,16 +159,12 @@ public class Spaceship extends GoodObj
 //  {
 //  }
   
-  public void die()
-  {
-    isAlive = false;
-  }
-  
   public void respawn(boolean a)
   {
-    if(deathTimer == 0) {
+    if(deathTimer == 0 && lives > 0) {
       isAlive = a;
-      health = 1;
+      health = 5;
+      deathBuffer = 81;
     }
     else
       deathTimer--;
@@ -186,6 +200,11 @@ public class Spaceship extends GoodObj
     return health;
   }
   
+  public int getLives()
+  {
+    return lives;
+  }
+  
   public void setHealth(int health)
   {
     this.health -= health;
@@ -194,6 +213,7 @@ public class Spaceship extends GoodObj
   public void kill(boolean a)
   {
     isAlive = a;
+    lives--;
     deathTimer = 500;
     immuneTimer = 500;
     isImmune = true;
